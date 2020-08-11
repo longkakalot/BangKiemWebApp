@@ -1,0 +1,218 @@
+﻿@model IEnumerable<BangKiemWebApp.ViewModels.NoiDungViewModel>
+@{
+    ViewData["Title"] = "NhapBangKiem";
+    var stt = 1;
+}
+
+<h1>Bảng kiểm @Model.Select(m => m.TenBangKiem).FirstOrDefault()</h1>
+<div class="card">
+    <div class="bg-primary text-white">
+        <div class="card-body">
+            Thông tin bệnh nhân
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="txtMaBn" placeholder="Nhập mã bn...">
+                    <div class="input-group-append">
+                        <button class="btn btn-success" id="btnGetInfoBn" type="submit">Lấy thông tin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divInfoBn" class="row">
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<div id="divNhapNoiDungBk" class="card">
+    <div class="bg-primary text-white">
+        <div class="card-body">
+            Nhập nội dung bảng kiểm @Model.Select(m => m.TenBangKiem).FirstOrDefault()
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="tblNoiDungBangKiem" width="100%">
+                    <thead class="thead-light">
+                        <tr role="row">
+                            <th style="width:2%" aria-controls="example">STT</th>
+                            <th style="width: 94%" aria-controls="example">Nội dung</th>
+                            <th style="width: 4%" aria-controls="example">Điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(stt++)</td>
+                                @if (item.Style == 1)
+                                {
+                                    <td style="color:red">@item.Ten</td>
+                                }
+                                else
+                                {
+                                    <td style="color:blue">@item.Ten</td>
+                                }
+                                <td>
+                                    <div id="chkboxScore">
+                                        <input id="ckbDiem" type="checkbox" class="form-control" name="Diem" />
+                                    </div>
+                                    @*<input id="ckbDiem1" type="checkbox" class="form-control" name="@item.Id" />*@
+                                    <p hidden="" id="pStyle">@item.Style</p>
+                                    <p hidden="" id="pIdNoiDung">@item.Id</p>
+                                </td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+
+                <table class="table table-striped table-bordered table-hover" width="100%">
+                    <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <h4 class="float-right">
+                                <span id="span2" class="badge badge-primary ml-2"></span>
+                            </h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <input type="button" id="btnLuuNoiDung" value="Lưu thông tin" class="btn btn-primary float-right" />
+
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+        function GetInfoBn(parameters) {
+            $("#btnGetInfoBn").click(function() {
+                var maBn = $("#txtMaBn").val();
+                $.ajax({
+                    type: "GET",
+                    url: "/BangKiem/GetInfoBn",
+                    data: { 'maBn': maBn },
+                    //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    dataType: "html",
+                    success: function(response) {
+                        //alert(response);
+                        if (response === 0 || response === "0") {
+                            swal.fire("Bệnh nhân không có hiện diện tại khoa.");
+                        } else {
+                            $("#divInfoBn").html(response);
+                            $("#divNhapNoiDungBk").show();
+                        }
+                    },
+                    failure: function(response) {
+                        alert("Lấy thông tin BN thất bại: " + response.responseText);
+                    },
+                    error: function(response) {
+                        alert("Lấy thông tin BN lỗi: " + response.responseText);
+                    }
+                });
+            });
+        };
+
+        function Luu(parameters) {
+            //var maBn = $("#txtMaBn").val();
+            //var hotenBn = $("#txtHoTenBn").text();
+            //var namSinh = $("#txtNamSinh").text();
+            //var phai = $("#txtPhai").text();
+            //var maicd = $("#txtMaIcd").text();
+            //var benhChinh = $("#txtChanDoan").text();
+            //var khoa = $("#txtKhoa").text();
+            $("#btnLuuNoiDung").click(function() {
+                var objNoiDungs = new Array();
+                var obj = {};
+                var status;
+                $("#tblNoiDungBangKiem TBODY TR").each(function() {
+                    var row = $(this);
+                    var noidungs = {};
+                    var idNoiDung = row.find("#pIdNoiDung").text();
+                    var style = row.find("#pStyle").text();
+                    noidungs.IdNoiDung = idNoiDung;
+                    //obj1.diem = row.find("td:eq(3) input[type='checkbox']").val();
+                    //obj1.diem1 = row.find("td:eq(3) input[name='Diem']:checked").val();
+                    if (row.find("#ckbDiem").prop("checked") === true) {
+                        noidungs.diem = 1;
+                        //console.log("Có");
+                    } else {
+                        noidungs.diem = 0;
+                        //console.log("Không Có");
+                    }
+
+                    if (style === "1" && noidungs.diem === 0) {
+                        status = 2; //không đạt
+                    }
+
+                    objNoiDungs.push(noidungs);
+                });
+                console.log(objNoiDungs);
+                obj.maBn = $("#txtMaBn").val();
+                obj.hotenBn = $("#txtHoTenBn").text();
+                obj.namSinh = $("#txtNamSinh").text();
+                obj.phai = $("#txtPhai").text();
+                obj.maicd = $("#txtMaIcd").text();
+                obj.benhChinh = $("#txtChanDoan").text();
+                obj.tenkhoaphong = $("#txtKhoa").text();
+                obj.mavaovien = $("#pMaVaoVien").text();
+                obj.maql = $("#pMaQl").text();
+                obj.status = status;
+                console.log(obj);
+                $.ajax({
+                    type: "POST",
+                    url: "/BangKiem/Insert",
+                    //data: JSON.stringify(objArr),
+                    data: { 'obj': obj, 'objNoiDungs' : objNoiDungs },
+                    //contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    success: function(responses) {
+                        if (responses === 0 || responses === "0") {
+                            swal.fire("Lỗi khi lưu dữ liệu", "", "success");
+                        } else {
+                            swal.fire("Thêm thành công", "", "success").then(function() {
+                                var url = "/BangKiem/Index";
+                                window.location.href = url;
+                            });
+                        }
+                    },
+                    failure: function(response) {
+                        alert("failure: Insert chi tiết bảng kiểm" + response.responseText);
+                    },
+                    error: function(response) {
+                        alert("error: Insert chi tiết bảng kiểm" + response.responseText);
+                    }
+                });
+
+            });
+        };
+
+        $(document).ready(function() {
+            $("#divNhapNoiDungBk").hide();
+            $("#txtMaBn").focus();
+            GetInfoBn();
+
+            $("#chkboxScore").click(function() {
+                var countChecked = function() {
+                    var n = $("#chkboxScore input:checked").length;
+                    $("#span2").text(n + (" ") + " điểm");
+                };
+                countChecked();
+                $("#chkboxScore input[type=checkbox]").on("click", countChecked);
+            });
+            Luu();
+        });
+    </script>
+}

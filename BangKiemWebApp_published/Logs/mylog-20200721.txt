@@ -1,0 +1,4 @@
+2020-07-21T12:18:14.6485389+07:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2020-07-21T12:18:14.6530417+07:00  [INF] Hosting environment: "Production" (c3307c92)
+2020-07-21T12:18:14.6531050+07:00  [INF] Content root path: "D:\.net core\BANGKIEM\BangKiemWebApp\published" (b5d60022)
+2020-07-21T12:39:13.7155534+07:00  [INF] Application is shutting down... (90f52c38)

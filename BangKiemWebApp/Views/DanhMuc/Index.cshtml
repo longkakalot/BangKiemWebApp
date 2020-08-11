@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+    <div class="card">
+        <div class="bg-primary text-white">
+            <div class="card-body">
+                Thêm mới Danh mục bảng kiểm
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row" id="divThongTinHc3">
+
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="txtTenBangKiem" placeholder="Tên bảng kiểm">
+                        <div class="input-group-append">
+                            <button class="btn btn-success" id="btnThem" type="submit">Thêm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div id="divListDanhMuc">
+
+</div>
+
+@section Scripts
+{
+    <script>
+        function Them(parameters) {
+            $("#btnThem").click(function() {
+                var objDanhMuc = {};
+                var ten = $("#txtTenBangKiem").val();
+                //alert(ten);
+                if (ten === "") {
+                    $("#txtTenBangKiem").focus();
+                    swal.fire("Không được để trống");
+                    return false;
+                }
+                objDanhMuc.ten = ten;
+                $.ajax({
+                    type: "POST",
+                    url: "/DanhMuc/Index",
+                    data: { 'objDanhMuc': objDanhMuc },
+                    //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    dataType: "text",
+                    success: function(response) {
+                        //alert(response);
+                        if (response === 1 || response === "1") {
+                            $("#txtTenBangKiem").focus();
+                            $("#txtTenBangKiem").val('');
+                            swal.fire("Thêm mới thành công.");
+                            GetAll();
+                        } else {
+                            swal.fire("Lỗi khi lưu dữ liệu.");
+                        }
+                    },
+                    failure: function(response) {
+                        alert("Thêm danh mục bảng kiểm thất bại: " + response.responseText);
+                    },
+                    error: function(response) {
+                        alert("Thêm danh mục bảng kiểm lỗi: " + response.responseText);
+                    }
+                });
+            });
+        };
+
+        function GetAll(parameters) {
+            $.ajax({
+                type: "GET",
+                url: "/DanhMuc/GetAll",
+                //data: { 'objDanhMuc': objDanhMuc },
+                //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                dataType: "html",
+                success: function(response) {
+                    //alert(response);
+                    if (response === 0 || response === "0") {
+                        swal.fire("Lấy danh sách bảng kiểm không thành công.");
+                    } else {
+                        $("#divListDanhMuc").html(response);
+                    }
+                },
+                failure: function(response) {
+                    alert("Lấy danh sách bảng kiểm thất bại: " + response.responseText);
+                },
+                error: function(response) {
+                    alert("Lấy danh sách bảng kiểm lỗi: " + response.responseText);
+                }
+            });
+        };
+
+        $(document).ready(function() {
+            GetAll();
+            $("#txtTenBangKiem").focus();
+            Them();
+        });
+    </script>
+}
+

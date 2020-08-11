@@ -1,0 +1,76 @@
+﻿@using System.Globalization
+@model BangKiemWebApp.ViewModels.BenhNhanViewModel
+
+@{
+    var hoTenBn = Model.BnInfo.Select(m => m.HoTenBn).FirstOrDefault();
+    var namSinh = Model.BnInfo.Select(m => m.NamSinh).FirstOrDefault().ToString(CultureInfo.InvariantCulture);
+    var gioiTinh = Model.BnInfo.Select(m => m.Phai).FirstOrDefault();
+    var chanDoan = Model.BnInfo.Select(m => m.BenhChinh).FirstOrDefault();
+    var maIcd = Model.BnInfo.Select(m => m.MaIcd).FirstOrDefault();
+    var khoa = Model.DotDieuTris.Select(m => m.TenKhoaPhong).FirstOrDefault();
+    var mavaovien = Model.DotDieuTris.Select(m => m.MaVaoVien).FirstOrDefault();
+    var maql = Model.DotDieuTris.Select(m => m.MaQl).FirstOrDefault();
+}
+
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 py-2">
+    <div class="card h-auto" style="height: 100%">
+        <div class="card-body bg-success" style="height: 100%">
+            <div class="h-50">
+                <h4 class="text-white">Họ tên bệnh nhân:</h4>
+                <br/>
+                <h2 id="txtHoTenBn" class="text-white">@hoTenBn</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 py-2">
+    <div class="card h-auto" style="height: 100%">
+        <div class="card-body bg-success" style="height: 100%">
+            <div class="h-50">
+                <h4 class="text-white">Năm sinh:</h4>
+                <br />
+                <h2 id="txtNamSinh" class="text-white">@namSinh</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 py-2">
+    <div class="card h-auto" style="height: 100%">
+        <div class="card-body bg-success" style="height: 100%">
+            <div class="h-50">
+                <h4 class="text-white">Giới tính:</h4>
+                <br />
+                <h2 id="txtPhai" class="text-white">@gioiTinh</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 py-2">
+    <div class="card h-auto" style="height: 100%">
+        <div class="card-body bg-success" style="height: 100%">
+            <div class="h-50">
+                <h4 class="text-white">Chẩn đoán:</h4>
+                <br />
+                <h3 id="txtMaIcd" class="text-white">@maIcd</h3>
+                <h2 id="txtChanDoan" class="text-white">@chanDoan</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 py-2">
+    <div class="card h-auto" style="height: 100%">
+        <div class="card-body bg-success" style="height: 100%">
+            <div class="h-50">
+                <h4 class="text-white">Khoa điều trị:</h4>
+                <br />
+                <h2 id="txtKhoa" class="text-white">@khoa</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<p hidden="" id="pMaVaoVien">@mavaovien</p>
+<p hidden="" id="pMaQl">@maql</p>
+
+
+
+        

@@ -1,0 +1,167 @@
+﻿@model IEnumerable<DanhMuc>
+@{
+    ViewData["Title"] = "Nội dung";
+}
+
+<div class="card">
+    <div class="bg-primary text-white">
+        <div class="card-body">
+            Thêm mới nội dung của bảng kiểm
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row" id="divNoidungBangKiem">
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                <h5>
+                    <span class="badge badge-pill badge-primary">Chọn bảng kiểm</span>
+                </h5>
+                <select id="ddlBangKiem" class="ddlSelect2 form-control" style="width: 100%">
+                </select>
+                <p class="text-danger" id="msgHoatChat" style="height: 12px"></p>
+            </div>
+
+
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                <h5>
+                    <span class="badge badge-pill badge-primary">Nhập nội dung bảng kiểm</span>
+                </h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="txtNoiDung" placeholder="Nội dung....">
+                    @*<div class="input-group-append">
+                    <button class="btn btn-success" id="btnThemNoiDung" type="submit">Thêm</button>
+                </div>*@
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                <h5>
+                    <span class="badge badge-pill badge-primary">STT</span>
+                </h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="txtStt">
+                    <input type="checkbox" class="form-control" id="ckbStyle">
+                    <div class="input-group-append">
+                        <button class="btn btn-success" id="btnThemNoiDung" type="submit">Thêm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="divListNoiDungBangKiem">
+
+</div>
+
+@section Scripts
+{
+    <script>
+        function DropDownlist(url, element) {
+            $.ajax({
+                type: "GET",
+                url: url, //"/Category/GetListDmLoaiMau"
+                //data: JSON.stringify(benhNhanInfo),
+                //contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(response) {
+                    //alert(response);
+                    //$('#' + element).empty(); //loaiMauDropDownList
+                    //$("#loaiMauDropDownList").prepend("option value='' selected='selected'></option>");
+                    for (var i = 0; i < response.length; i++) {
+                        $('#' + element)
+                            .append('<option value=' + response[i].id.toString() + '>' + response[i].ten + '</option > ');
+                    };
+                },
+                failure: function(response) {
+                    alert("Lấy Dropdownlist bảng kiểm thất bại: " + response.responseText);
+                },
+                error: function(response) {
+                    alert("Lấy Dropdownlist bảng kiểm error: " + response.responseText);
+                }
+            });
+        };
+
+        function ThemNoiDung(parameters) {
+            $("#btnThemNoiDung").click(function() {
+                var ddlBangKiem = $("[id*=ddlBangKiem]");
+                var idBangKiem = (ddlBangKiem.val()).toString();
+                //alert(idBangKiem);
+                var tenBangKiem = ddlBangKiem.find("option:selected").text();
+                var tenNoiDung = $("#txtNoiDung").val();
+                var stt = $("#txtStt").val();
+                if (tenNoiDung === "") {
+                    $("#txtNoiDung").focus();
+                    swal.fire("Không được để trống");
+                    return false;
+                }
+                if (stt === "") {
+                    $("#txtStt").focus();
+                    swal.fire("Không được để trống");
+                    return false;
+                }
+                var objNoiDung = {};
+                objNoiDung.iddm = idBangKiem;
+                objNoiDung.ten = tenNoiDung;
+                objNoiDung.stt = stt;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/NoiDung/Insert",
+                    data: { 'objNoiDung': objNoiDung },
+                    //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    dataType: "text",
+                    success: function (response) {
+                        //alert(response);
+                        if (response === 1 || response === "1") {
+                            $("#txtNoiDung").focus();
+                            $("#txtNoiDung").val('');
+                            var sttHientai = parseInt($("#txtStt").val());
+                            var sttMoi = sttHientai + 1;
+                            $("#txtStt").val(sttMoi);
+                            swal.fire("Thêm mới thành công.");
+                            GetAllNoiDungBangKiem();
+                        } else {
+                            swal.fire("Lỗi khi lưu dữ liệu nội dung bảng kiểm.");
+                        }
+                    },
+                    failure: function (response) {
+                        alert("Thêm nội dung bảng kiểm thất bại: " + response.responseText);
+                    },
+                    error: function (response) {
+                        alert("Thêm nội dung bảng kiểm lỗi: " + response.responseText);
+                    }
+                });
+            });
+        };
+
+        function GetAllNoiDungBangKiem(parameters) {
+            $.ajax({
+                type: "GET",
+                url: "/NoiDung/GetAll",
+                //data: { 'objDanhMuc': objDanhMuc },
+                //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    //alert(response);
+                    if (response === 0 || response === "0") {
+                        swal.fire("Lấy danh sách nội dung bảng kiểm không thành công.");
+                    } else {
+                        $("#divListNoiDungBangKiem").html(response);
+                    }
+                },
+                failure: function (response) {
+                    alert("Lấy danh sách nội dung bảng kiểm thất bại: " + response.responseText);
+                },
+                error: function (response) {
+                    alert("Lấy danh sách nội dung bảng kiểm lỗi: " + response.responseText);
+                }
+            });
+        };
+
+        $(document).ready(function() {
+            GetAllNoiDungBangKiem();
+            DropDownlist("NoiDung/GetListBangKiem", "ddlBangKiem");
+            //$('.ddlSelect2').select2();
+            ThemNoiDung();
+        });
+    </script>
+}

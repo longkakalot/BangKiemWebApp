@@ -1,0 +1,275 @@
+﻿@model IEnumerable<BangKiemWebApp.ViewModels.NoiDungViewModel>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var stt = 0;
+    var tenBangKiem = Model
+        .GroupBy(m => new
+        {
+            m.TenBangKiem, m.Iddm
+        })
+        .Select(m => new
+        {
+            m.Key.Iddm, m.Key.TenBangKiem
+        });
+}
+
+<div class="card">
+    <div class="bg-primary text-white">
+        <div class="card-body">
+            Danh sách nội dung bảng kiểm
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <table class="table table-striped table-bordered table-responsive" id="tblListNoiDung" style="width: 100%">
+                <thead>
+                <tr>
+                    <th style="width: 1%; text-align: center">STT</th>
+                    @*<th style="width: 10%;">Tên bảng kiểm</th>*@
+                    <th style="width: 40%;">Tên nội dung</th>
+                    <th style="width: 10%;">STT hiển thị</th>
+                    <th style="width: 10%">Ngày cập nhật</th>
+                    <th style="width: 20%;">Trạng thái</th>
+                    <th style="width: 10%;">Người nhập</th>
+                    <th style="width: 10%">#</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in tenBangKiem)
+                {
+                    <tr style="background-color: lightblue; color: white">
+                        <td colspan="7" >@item.TenBangKiem</td>
+                            
+                    </tr>
+                    @foreach (var item1 in Model.Where(m => m.Iddm == item.Iddm).OrderBy(m=>m.Stt))
+                    {
+                <tr>
+                    <td></td>
+                    @if (item1.HideNoiDung == 0 && item1.Style == 1)
+                    {
+                        <td style="color: green">
+                            <p id ="pTenNoiDung">@item1.Ten</p>
+                        </td>
+                        <td style="color: green"><p id="pSttNoiDung">@item1.Stt</p></td>
+                        <td style="color: green">@item1.NgayUd.ToString("dd/MM/yyyy")</td>
+                        <td style="color: green">Còn sử dụng</td>
+                        <td style="color: green">@item1.Username</td>
+
+                    }
+                    else if (item1.HideNoiDung == 0)
+                    {
+                        <td style="color: blue">
+                            <p id="pTenNoiDung">@item1.Ten</p>
+                        </td>
+                        <td style="color: blue"><p id="pSttNoiDung">@item1.Stt</p></td>
+                        <td style="color: blue">@item1.NgayUd.ToString("dd/MM/yyyy")</td>
+                        <td style="color: blue">Còn sử dụng</td>
+                        <td style="color: blue">@item1.Username</td>
+                    }
+                    else
+                    {
+                        <td style="color: red"><p id="pTenNoiDung">@item1.Ten</p></td>
+                        <td style="color: red"><p id="pSttNoiDung">@item1.Stt</p></td>
+                        <td style="color: red">@item1.NgayUd.ToString("dd/MM/yyyy")</td>
+                        <td style="color: red">Đã khóa</td>
+                        <td style="color: red">@item1.Username</td>
+                    }
+
+                <td>
+                    <p id="pId" hidden="">@item1.Id</p>
+                    <p id="pHideNoiDung" hidden="">@item1.HideNoiDung</p>
+                    <p id="pStyle" hidden="">@item1.Style</p>
+                    <i class="fas fa-edit iEditNoidung" style="color: blue; font-weight: bold; font-size: 24px" aria-hidden="true" title="Sửa"></i>
+                    @if (item1.HideNoiDung == 0)
+                    {
+                        <i class="fa fa-lock btnLockNoidung" style="color: red; font-weight: bold; font-size: 24px" aria-hidden="true" title="Khóa"></i>
+                        @if (item1.Style == 0)
+                        {
+                            <i class="fas fa-palette btnStyleBlue" style="color: blue; font-weight: bold; font-size: 24px" aria-hidden="true"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-palette btnStyleGreen" style="color: green; font-weight: bold; font-size: 24px" aria-hidden="true"></i>
+
+                        }
+                    }
+                    else
+                    {
+                        <i class="fa fa-unlock btnUnLockNoidung" style="color: red; font-weight: bold; font-size: 24px" aria-hidden="true" title="Mở Khóa"></i>
+
+                    }
+                    
+                </td>
+                </tr>
+                    }
+                }
+                    
+
+                @*@foreach (var item in Model)
+                    {
+
+                        <tr style="color: blue">
+                            <td style="width: 1%; text-align: center">@(stt++)</td>
+                            <td>
+                                <p id="pTenBangKiem">@item.Iddm</p></td>
+                            <td>
+                                <p id="pTenBangKiem">@item.Iddm</p></td>
+
+                            <td>@item.NgayUd.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <p>Còn sử dụng</p>
+                            </td>
+
+                            <td>
+                                <p id="pId" hidden="">@item.Id</p>
+                                <p id="pHide" hidden="">@item.Hide</p>
+                                <i class="fas fa-edit iEditDm" style="color: blue; font-weight: bold; font-size: 24px" aria-hidden="true" title="Sửa"></i>
+                                <i class="fa fa-lock btnLock" style="color: red; font-weight: bold; font-size: 24px" aria-hidden="true" title="Khóa"></i>
+                            </td>
+                        </tr>
+
+                    }*@
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    
+@{
+    <script>
+        function UpdateTrangThaiNoiDungBK(button) {
+            $("#tblListNoiDung").on('click', '.' + button, function() {
+                var currentRow = $(this).closest("tr");
+                var objNoiDung = {};
+                //alert(button);
+                var id = (currentRow.find('#pId').text());
+                var hide = (currentRow.find('#pHideNoiDung').text());
+                var style = (currentRow.find('#pStyle').text());
+                var tenNoiDung = (currentRow.find('#pTenNoiDung').text());
+                var stt = (currentRow.find('#pSttNoiDung').text());
+
+                if (button === "btnStyleBlue" || button === "btnStyleGreen") {
+                    objNoiDung.id = id;
+                    objNoiDung.style = style;
+                    objNoiDung.hide = 3;
+                } else if (button === "btnLockNoidung" || button === "btnUnLockNoidung") {
+                    objNoiDung.id = id;
+                    objNoiDung.hide = hide;
+                    objNoiDung.style = 3;
+                } else {
+                    objNoiDung.id = id;
+                    objNoiDung.ten = tenNoiDung;
+                    objNoiDung.stt = stt;
+                }
+
+                //objNoiDung.id = id;
+                //objNoiDung.hide = hide;
+                //objNoiDung.style = style;
+                $.ajax({
+                    type: "POST",
+                    url: "/NoiDung/Update",
+                    data: { 'objNoiDung': objNoiDung },
+                    //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    dataType: "text",
+                    success: function(response) {
+                        //alert(response);
+                        if (response === 1 || response === "1") {
+                            //$("#txtTenBangKiem").focus();
+                            //$("#txtTenBangKiem").val('');
+                            //swal.fire("Thêm mới thành công.");
+                            GetAllNoiDungBangKiem();
+                        } else {
+                            swal.fire("Lỗi khi đổi trạng thái nội dung BK.");
+                        }
+                    },
+                    failure: function(response) {
+                        alert("Cập nhật trạng thái nội dung BK thất bại: " + response.responseText);
+                    },
+                    error: function(response) {
+                        alert("Cập nhật trạng thái nội dung BK lỗi: " + response.responseText);
+                    }
+                });
+                //alert(id + "_" + hide);
+            });
+        };
+
+        function EditNoiDungBk(button) {
+            $("#tblListNoiDung").on('click',
+                '.' + button,
+                function() {
+                    var currentRow = $(this).closest("tr");
+                    var objNoiDung = {};
+                    
+                    var id = (currentRow.find('#pId').text());
+                    var tenNoiDung = (currentRow.find('#pTenNoiDung').text());
+                    var stt = (currentRow.find('#pSttNoiDung').text());
+
+                    swal.fire({
+                        title: 'Nhập tên và STT nội dung cần sửa',
+                        //input: 'html',
+                        //inputValue: ten,
+                        showCancelButton: true,
+                            html:
+                                '<input id="swal-input1" class="swal2-input"' +
+                                    ' value=' +
+                                    '"' +
+                                    tenNoiDung +
+                                    '"' +
+                                    '/>' +
+                                    '<input id="swal-input2" class="swal2-input"' +
+                                    ' value=' +
+                                    '"' +
+                                    stt +
+                                    '"' +
+                                    '/>',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Không được để trống!.';
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.value) {
+                            //alert($("#swal-input1").val());
+                            objNoiDung.ten = $("#swal-input1").val();
+                            objNoiDung.stt = $("#swal-input2").val();
+                            objNoiDung.id = id;
+                            objNoiDung.style = 3;
+                            objNoiDung.hide = 3;
+                            $.ajax({
+                                type: "POST",
+                                url: "/NoiDung/Update",
+                                data: { 'objNoiDung': objNoiDung },
+                                //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                                dataType: "text",
+                                success: function (response) {
+                                    //alert(response);
+                                    if (response === 1 || response === "1") {
+                                        GetAllNoiDungBangKiem();
+                                    } else {
+                                        swal.fire("Lỗi khi cập nhật nội dung bảng kiếm.");
+                                    }
+                                },
+                                failure: function (response) {
+                                    alert("Cập nhật nội dung bảng kiểm thất bại: " + response.responseText);
+                                },
+                                error: function (response) {
+                                    alert("Cập nhật nội dung bảng kiểm lỗi: " + response.responseText);
+                                }
+                            });
+                        }
+                    });
+
+                });
+        };
+
+        $(document).ready(function() {
+            UpdateTrangThaiNoiDungBK("btnLockNoidung");
+            UpdateTrangThaiNoiDungBK("btnUnLockNoidung");
+            UpdateTrangThaiNoiDungBK("btnStyleBlue");
+            UpdateTrangThaiNoiDungBK("btnStyleGreen");
+            EditNoiDungBk("iEditNoidung");
+        });
+    </script>
+}

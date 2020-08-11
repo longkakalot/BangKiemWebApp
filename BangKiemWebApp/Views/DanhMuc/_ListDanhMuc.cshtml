@@ -1,0 +1,174 @@
+﻿@model IEnumerable<DanhMuc>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    var stt = 1;
+    var sttk = 1;
+}
+<div class="card">
+    <div class="bg-primary text-white">
+        <div class="card-body">
+            Danh sách bảng kiểm
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <table class="table table-striped table-bordered table-responsive" id="tblListDanhMuc" style="width: 100%">
+                <thead>
+                <tr>
+                    <th style="width: 1%; text-align: center">STT</th>
+                    <th style="width: 20%;">Tên bảng kiểm</th>
+                    <th style="width: 10%">Ngày cập nhật</th>
+                    <th style="width: 20%;">Trạng thái</th>
+                    <th style="width: 30%">#</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                        
+                    @if (item.Hide == 0)
+                    {
+                        <tr style="color: blue">
+                            <td style="width: 1%; text-align: center">@(stt++)</td>
+                            <td><p id="pTen">@item.Ten</p></td>
+                            <td>@item.NgayUd.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <p>Còn sử dụng</p>
+                            </td>
+
+                            <td>
+                                <p id="pId" hidden="">@item.Id</p>
+                                <p id="pHide" hidden="">@item.Hide</p>
+                                <i class="fas fa-edit iEditDm" style="color: blue; font-weight: bold; font-size: 24px" aria-hidden="true" title="Sửa"></i>
+                                <i class="fa fa-lock btnLock" style="color: red; font-weight: bold; font-size: 24px" aria-hidden="true" title="Khóa"></i>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr style="color: red">
+                            <td style="width: 1%; text-align: center">@(sttk++)</td>
+                            <td><p id="pTen">@item.Ten</p></td>
+                            <td>@item.NgayUd.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <p>Đã khóa</p>
+                            </td>
+
+                            <td>
+                                <p id="pId" hidden="">@item.Id</p>
+                                <p id="pHide" hidden="">@item.Hide</p>
+                                <i id="iEditBn" class="fas fa-edit iEditDm" style="color: blue; font-weight: bold; font-size: 24px" aria-hidden="true" title="Sửa"></i>
+                                <i class="fa fa-unlock btnUnlock" style="color: red; font-weight: bold; font-size: 24px" aria-hidden="true" title="Mở Khóa"></i>
+
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    
+    @{
+        <script>
+            function UpdateTrangThai(button) {
+                $("#tblListDanhMuc").on('click', '.' + button, function() {
+                    var currentRow = $(this).closest("tr");
+                    var objDanhMuc = {};
+                    var id = (currentRow.find('#pId').text());
+                    var hide = (currentRow.find('#pHide').text());
+                    objDanhMuc.id = id;
+                    objDanhMuc.hide = hide;
+                    $.ajax({
+                        type: "POST",
+                        url: "/DanhMuc/Update",
+                        data: { 'objDanhMuc': objDanhMuc },
+                        //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                        dataType: "text",
+                        success: function(response) {
+                            //alert(response);
+                            if (response === 1 || response === "1") {
+                                //$("#txtTenBangKiem").focus();
+                                //$("#txtTenBangKiem").val('');
+                                //swal.fire("Thêm mới thành công.");
+                                GetAll();
+                            } else {
+                                swal.fire("Lỗi khi đổi trạng thái.");
+                            }
+                        },
+                        failure: function(response) {
+                            alert("Cập nhật trạng thái thất bại: " + response.responseText);
+                        },
+                        error: function(response) {
+                            alert("Cập nhật trạng thái lỗi: " + response.responseText);
+                        }
+                    });
+                    //alert(id + "_" + hide);
+                });
+            };
+
+            function EditDm(button) {
+                $("#tblListDanhMuc").on('click',
+                    '.' + button,
+                    function() {
+                        var currentRow = $(this).closest("tr");
+                        var objDanhMuc = {};
+                        var ten = (currentRow.find('#pTen').text());
+
+                        swal.fire({
+                            title: 'Nhập tên bảng kiểm cần sửa',
+                            input: 'text',
+                            inputValue: ten,
+                            showCancelButton: true,
+                            inputValidator: (value) => {
+                                if (!value) {
+                                    return 'Không được để trống!.';
+                                }
+                            }
+                        }).then((result) => {
+                            if (result.value) {
+                                objDanhMuc.ten = result.value;
+                                var id = (currentRow.find('#pId').text());
+                                objDanhMuc.id = id;
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/DanhMuc/Update",
+                                    data: { 'objDanhMuc': objDanhMuc },
+                                    //contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                                    dataType: "text",
+                                    success: function(response) {
+                                        //alert(response);
+                                        if (response === 1 || response === "1") {
+                                            //$("#txtTenBangKiem").focus();
+                                            //$("#txtTenBangKiem").val('');
+                                            //swal.fire("Thêm mới thành công.");
+                                            GetAll();
+                                        } else {
+                                            swal.fire("Lỗi khi cập nhật tên bảng kiếm.");
+                                        }
+                                    },
+                                    failure: function(response) {
+                                        alert("Cập nhật tên bảng kiểm thất bại: " + response.responseText);
+                                    },
+                                    error: function(response) {
+                                        alert("Cập nhật tên bảng kiểm lỗi: " + response.responseText);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                
+            };
+
+            $(document).ready(function() {
+                UpdateTrangThai("btnUnlock");
+                UpdateTrangThai("btnLock");
+                EditDm("iEditDm");
+            });
+        </script>
+    }
